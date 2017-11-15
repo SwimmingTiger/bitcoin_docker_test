@@ -20,14 +20,18 @@ RUN apt-get update
 RUN apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3
 RUN apt-get install -y libboost-all-dev libzmq3-dev curl wget net-tools
 
-# build bitcoind
+# build bitcoind and clean
+# Docker generates a new layer for each RUN command, so the download and cleanup must in a single RUN command.
 RUN mkdir ~/source
-RUN cd ~/source && wget https://github.com/bitcoin/bitcoin/archive/v0.15.1.tar.gz
-RUN cd ~/source \
+  && cd ~/source \
+  && wget https://github.com/bitcoin/bitcoin/archive/v0.15.1.tar.gz \
   && tar zxf v0.15.1.tar.gz && cd bitcoin-0.15.1 \
   && ./autogen.sh \
   && ./configure --disable-wallet --disable-tests \
-  && make && make install
+  && make && make install \
+  && rm -rf ~/source \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # mkdir bitcoind data dir
 RUN mkdir -p /root/.bitcoin
@@ -53,9 +57,3 @@ RUN chmod +x /etc/service/bitcoind/run
 #RUN mkdir        /etc/service/bitcoind_testnet3
 #ADD run_testnet3 /etc/service/bitcoind_testnet3/run
 #RUN chmod +x     /etc/service/bitcoind_testnet3/run
-
-# remove source & build files
-RUN rm -rf ~/source
-
-# clean
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
