@@ -22,7 +22,7 @@ RUN apt-get install -y libboost-all-dev libzmq3-dev curl wget net-tools
 
 # build bitcoind and clean
 # Docker generates a new layer for each RUN command, so the download and cleanup must in a single RUN command.
-RUN mkdir ~/source
+RUN mkdir ~/source \
   && cd ~/source \
   && wget https://github.com/bitcoin/bitcoin/archive/v0.15.1.tar.gz \
   && tar zxf v0.15.1.tar.gz && cd bitcoin-0.15.1 \
