@@ -16,13 +16,12 @@ CMD ["/sbin/my_init"]
 # use aliyun source
 ADD sources-aliyun.com.list /etc/apt/sources.list
 
-RUN apt-get update
-RUN apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3
-RUN apt-get install -y libboost-all-dev libzmq3-dev curl wget net-tools
-
 # build bitcoind and clean
 # Docker generates a new layer for each RUN command, so the download and cleanup must in a single RUN command.
-RUN mkdir ~/source \
+RUN  apt-get update \
+  && apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 \
+  && apt-get install -y libboost-all-dev libzmq3-dev curl wget net-tools \
+  && mkdir ~/source \
   && cd ~/source \
   && wget https://github.com/bitcoin/bitcoin/archive/v0.15.1.tar.gz \
   && tar zxf v0.15.1.tar.gz && cd bitcoin-0.15.1 \
@@ -30,6 +29,8 @@ RUN mkdir ~/source \
   && ./configure --disable-wallet --disable-tests \
   && make && make install \
   && rm -rf ~/source \
+  && apt-get purge libboost-all-dev \
+  && apt-get autoremove \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
