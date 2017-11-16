@@ -27,7 +27,8 @@ RUN  apt-get update \
   && tar zxf v0.15.1.tar.gz && cd bitcoin-0.15.1 \
   && ./autogen.sh \
   && ./configure --disable-wallet --disable-tests \
-  && make && make install \
+  && make -j$(nproc) \
+  && make install \
   && rm -rf ~/source \
   && apt-get purge libboost-all-dev \
   && apt-get autoremove \
