@@ -24,14 +24,15 @@ RUN  apt-get update \
   && mkdir ~/source \
   && cd ~/source \
   && wget https://github.com/bitcoin/bitcoin/archive/v0.15.1.tar.gz \
-  && tar zxf v0.15.1.tar.gz && cd bitcoin-0.15.1 \
+  && tar zxf v0.15.1.tar.gz \
+  && cd bitcoin-0.15.1 \
   && ./autogen.sh \
   && ./configure --disable-wallet --disable-tests \
   && make -j$(nproc) \
   && make install \
   && rm -rf ~/source \
-  && apt-get purge libboost-all-dev \
-  && apt-get autoremove \
+  && apt-get purge -y libboost-all-dev \
+  && apt-get autoremove -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
